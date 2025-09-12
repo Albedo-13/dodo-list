@@ -1,5 +1,5 @@
 import Particles, { initParticlesEngine } from '@tsparticles/react';
-import { loadSlim } from '@tsparticles/slim'; // if you are going to use `loadSlim`, install the "@tsparticles/slim" package too.
+import { loadSlim } from '@tsparticles/slim';
 import { useEffect } from 'react';
 
 import { options } from './particles-config';
