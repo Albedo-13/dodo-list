@@ -1,6 +1,9 @@
+export type StatusKey = 'todo' | 'inProgress' | 'done';
+
 export type Status = {
+  id: number;
+  key: StatusKey;
   name: string;
-  icon: string;
   color: string;
 };
 

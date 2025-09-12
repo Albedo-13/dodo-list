@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
-export const GET_BACKLOG_LIST = gql`
-  query GetBacklogList {
+export const GET_ALL_BACKLOGS = gql`
+  query GetAllBacklogs {
     allBacklogs {
       id
       task
@@ -10,7 +10,7 @@ export const GET_BACKLOG_LIST = gql`
       isDone
       status: Status {
         name
-        icon
+        key
         color
       }
       user: User {

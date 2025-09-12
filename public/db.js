@@ -4,6 +4,27 @@ export const users = [
   { id: 3, name: 'Ivan Dorn' },
 ];
 
+export const statuses = [
+  {
+    id: 1,
+    key: 'todo',
+    name: 'To do',
+    color: '#87ceeb',
+  },
+  {
+    id: 2,
+    key: 'inProgress',
+    name: 'In progress',
+    color: '#ffa500',
+  },
+  {
+    id: 3,
+    key: 'done',
+    name: 'Done',
+    color: '#008000',
+  },
+];
+
 export const backlogs = [
   {
     id: 1,
@@ -50,26 +71,68 @@ export const backlogs = [
     estimation: 2,
     user_id: 3,
   },
-];
-
-export const statuses = [
   {
-    id: 1,
-    name: 'To do',
-    icon: 'todo',
-    color: '#87ceeb',
+    id: 6,
+    task: 'Implement authentication',
+    type: 'Security',
+    isDone: false,
+    status_id: 1,
+    estimation: 24,
+    user_id: 2,
   },
   {
-    id: 2,
-    name: 'In progress',
-    icon: 'inProgress',
-    color: '#ffa500',
+    id: 7,
+    task: 'Optimize database queries',
+    type: 'Backend',
+    isDone: false,
+    status_id: 2,
+    estimation: 16,
+    user_id: 1,
   },
   {
-    id: 3,
-    name: 'Done',
-    icon: 'done',
-    color: '#008000',
+    id: 8,
+    task: 'Write unit tests',
+    type: 'Testing',
+    isDone: true,
+    status_id: 3,
+    estimation: 12,
+    user_id: 3,
+  },
+  {
+    id: 9,
+    task: 'Update documentation',
+    type: 'Documentation',
+    isDone: false,
+    status_id: 1,
+    estimation: 8,
+    user_id: 2,
+  },
+  {
+    id: 10,
+    task: 'Refactor legacy code',
+    type: 'Refactoring',
+    isDone: false,
+    status_id: 2,
+    estimation: 40,
+    user_id: 1,
+  },
+  {
+    id: 11,
+    task: 'Implement responsive design',
+    type: 'UI',
+    isDone: true,
+    status_id: 3,
+    estimation: 18,
+    user_id: 3,
+  },
+  {
+    id: 12,
+    task: 'Add search functionality',
+    type: 'Feature',
+    isDone: false,
+    status_id: 1,
+    estimation: 28,
+    user_id: 2,
   },
 ];
 
