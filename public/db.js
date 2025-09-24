@@ -27,7 +27,7 @@ export const statuses = [
 
 export const backlogs = [
   {
-    id: 1,
+    id: 10001,
     task: 'Paint Buttons',
     type: 'Narrative',
     isDone: false,
@@ -36,16 +36,16 @@ export const backlogs = [
     user_id: 3,
   },
   {
-    id: 2,
+    id: 10002,
     task: 'Create new UI',
     type: 'UI',
     isDone: false,
     status_id: 1,
     estimation: 32,
-    user_id: 2,
+    user_id: null,
   },
   {
-    id: 3,
+    id: 10003,
     task: 'Create new API',
     type: 'API',
     isDone: true,
@@ -54,7 +54,7 @@ export const backlogs = [
     user_id: 1,
   },
   {
-    id: 4,
+    id: 10004,
     task: 'Add new page',
     type: 'Page',
     isDone: true,
@@ -63,7 +63,7 @@ export const backlogs = [
     user_id: 1,
   },
   {
-    id: 5,
+    id: 10005,
     task: 'Fix margins',
     type: 'UI',
     isDone: false,
@@ -72,16 +72,16 @@ export const backlogs = [
     user_id: 3,
   },
   {
-    id: 6,
+    id: 10006,
     task: 'Implement authentication',
     type: 'Security',
     isDone: false,
     status_id: 1,
     estimation: 24,
-    user_id: 2,
+    user_id: null,
   },
   {
-    id: 7,
+    id: 10007,
     task: 'Optimize database queries',
     type: 'Backend',
     isDone: false,
@@ -90,7 +90,7 @@ export const backlogs = [
     user_id: 1,
   },
   {
-    id: 8,
+    id: 10008,
     task: 'Write unit tests',
     type: 'Testing',
     isDone: true,
@@ -99,16 +99,16 @@ export const backlogs = [
     user_id: 3,
   },
   {
-    id: 9,
+    id: 10009,
     task: 'Update documentation',
     type: 'Documentation',
     isDone: false,
     status_id: 1,
     estimation: 8,
-    user_id: 2,
+    user_id: null,
   },
   {
-    id: 10,
+    id: 10010,
     task: 'Refactor legacy code',
     type: 'Refactoring',
     isDone: false,
@@ -117,7 +117,7 @@ export const backlogs = [
     user_id: 1,
   },
   {
-    id: 11,
+    id: 10011,
     task: 'Implement responsive design',
     type: 'UI',
     isDone: true,
@@ -126,14 +126,12 @@ export const backlogs = [
     user_id: 3,
   },
   {
-    id: 12,
+    id: 10012,
     task: 'Add search functionality',
     type: 'Feature',
     isDone: false,
     status_id: 1,
     estimation: 28,
-    user_id: 2,
+    user_id: null,
   },
 ];
-
-// TODO: one of db files is redundant

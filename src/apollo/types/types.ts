@@ -8,15 +8,18 @@ export type Status = {
 };
 
 export type User = {
+  id: number;
   name: string;
 };
 
 export type BacklogItem = {
-  id: string;
+  id: number;
   task: string;
   type: string;
   estimation: number;
   isDone: boolean;
   status: Status;
-  user: User;
+  user: User | null;
 };
+
+export type FormPurpose = 'add' | 'edit';

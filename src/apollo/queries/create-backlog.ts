@@ -1,0 +1,29 @@
+import { gql } from '@apollo/client';
+
+export const ADD_BACKLOG = gql`
+  mutation AddBacklog(
+    $task: String!
+    $type: String!
+    $isDone: Boolean!
+    $estimation: Int!
+    $user_id: ID
+    $status_id: ID!
+  ) {
+    createBacklog(
+      task: $task
+      type: $type
+      isDone: $isDone
+      estimation: $estimation
+      user_id: $user_id
+      status_id: $status_id
+    ) {
+      id
+      task
+      type
+      isDone
+      estimation
+      user_id
+      status_id
+    }
+  }
+`;

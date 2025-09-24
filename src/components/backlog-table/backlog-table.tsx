@@ -1,20 +1,28 @@
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import {
   type ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  type Row,
   useReactTable,
 } from '@tanstack/react-table';
 import { ListFilter, MoreHorizontal } from 'lucide-react';
 import { useState } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 
 import { GET_ALL_BACKLOGS } from '@/apollo/queries/get-all-backlogs';
 import { GET_ALL_STATUSES } from '@/apollo/queries/get-all-statuses';
-import { type BacklogData, type StatusData } from '@/apollo/types/queries';
-import type { StatusKey } from '@/apollo/types/types';
+import { TOGGLE_BACKLOG } from '@/apollo/queries/toggle-backlog';
+import {
+  type BacklogData,
+  type StatusData,
+  type ToggleBacklogPayload,
+} from '@/apollo/types/queries';
+import type { BacklogItem, StatusKey } from '@/apollo/types/types';
 import { matchIcon } from '@/lib/match-icon';
+import { toggleStatusId } from '@/lib/toggle-status-id';
 import { Button } from '@/ui/button';
 import { Checkbox } from '@/ui/checkbox';
 import {
@@ -27,6 +35,7 @@ import {
 } from '@/ui/dropdown-menu';
 import { Input } from '@/ui/input';
 import { Label } from '@/ui/label';
+import { Sheet, SheetTrigger } from '@/ui/sheet';
 import {
   Table,
   TableBody,
@@ -37,12 +46,19 @@ import {
 } from '@/ui/table';
 import { Tag } from '@/ui/tag';
 
+import { BacklogForm } from '../backlog-form/backlog-form';
 import { columns } from './columns';
 
 export function BacklogTable() {
   const { data: backlogsData } = useQuery<BacklogData>(GET_ALL_BACKLOGS);
   const { data: statusesData } = useQuery<StatusData>(GET_ALL_STATUSES);
+  const [toggleBacklog, { loading: isToggleBacklogLoading }] =
+    useMutation<ToggleBacklogPayload>(TOGGLE_BACKLOG, {
+      refetchQueries: [{ query: GET_ALL_BACKLOGS }],
+    });
 
+  const [backlogItem, setBacklogItem] = useState<BacklogItem | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [statusFilters, setStatusFilters] = useState<
     Record<StatusKey, boolean>
@@ -59,11 +75,36 @@ export function BacklogTable() {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onColumnFiltersChange: setColumnFilters,
+    autoResetPageIndex: false,
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       columnFilters,
     },
   });
+
+  const onFormAddClick = () => {
+    setIsFormOpen(true);
+    setBacklogItem(null);
+  };
+
+  const onFormEditClick = (row: Row<BacklogItem>) => () => {
+    setIsFormOpen(true);
+    setBacklogItem(row.original);
+  };
+
+  const onDebouncedToggleBacklogClick = useDebouncedCallback(
+    (row: Row<BacklogItem>) => {
+      const { id, isDone, status, user } = row.original;
+      toggleBacklog({
+        variables: {
+          id,
+          isDone: !isDone,
+          status_id: toggleStatusId(status, user),
+        },
+      });
+    },
+    150
+  );
 
   // console.log('backlogsData', backlogsData);
   // console.log('statusesData', statusesData);
@@ -134,13 +175,20 @@ export function BacklogTable() {
           }
           className="max-w-sm"
         />
-        <Button variant="secondary" className="cursor-pointer shadow-xs">
-          + Add new Task
-        </Button>
+        <Sheet open={isFormOpen} onOpenChange={setIsFormOpen}>
+          <SheetTrigger asChild>
+            <Button
+              variant="secondary"
+              onClick={onFormAddClick}
+              className="cursor-pointer shadow-xs"
+            >
+              + Add new Task
+            </Button>
+          </SheetTrigger>
+          <BacklogForm open={isFormOpen} backlogItem={backlogItem} />
+        </Sheet>
       </div>
-
       <Table>
-        {/* <TableCaption>A list of backlog tasks.</TableCaption> */}
         {/* TODO: separate component */}
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -165,8 +213,16 @@ export function BacklogTable() {
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => {
               // TODO: separate component
-              const { id, task, type, estimation, isDone, status, user } =
-                row.original;
+              // TODO: isdone нужно в данных?
+              const {
+                id,
+                task,
+                type,
+                estimation,
+                // isDone,
+                status,
+                user,
+              } = row.original;
 
               return (
                 <TableRow
@@ -176,10 +232,13 @@ export function BacklogTable() {
                 >
                   <>
                     <TableCell className="font-medium flex gap-x-3 pt-4 pl-4">
+                      {id}
                       <Checkbox
-                        checked={isDone}
+                        checked={status?.key === 'done'}
+                        onClick={() => onDebouncedToggleBacklogClick(row)}
                         id="isDone"
                         className="cursor-pointer"
+                        disabled={isToggleBacklogLoading}
                       />
                     </TableCell>
                     <TableCell className="font-medium">{task}</TableCell>
@@ -187,35 +246,40 @@ export function BacklogTable() {
                       <Tag>{type}</Tag>
                     </TableCell>
                     <TableCell>
-                      <Tag icon={status.key} color={status.color}>
-                        {status.name}
+                      <Tag icon={status?.key} color={status?.color}>
+                        {status?.name}
                       </Tag>
                     </TableCell>
                     <TableCell>{estimation}</TableCell>
-                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user?.name}</TableCell>
 
                     <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            className="h-8 w-8 p-0 cursor-pointer"
-                          >
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="cursor-pointer">
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600 cursor-pointer">
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <Sheet>
+                        <DropdownMenu modal={false}>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="h-8 w-8 p-0 cursor-pointer"
+                            >
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="cursor-pointer"
+                              onClick={onFormEditClick(row)}
+                            >
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="text-red-600 cursor-pointer">
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </Sheet>
                     </TableCell>
                   </>
                 </TableRow>
@@ -233,7 +297,6 @@ export function BacklogTable() {
           )}
         </TableBody>
       </Table>
-
       {/* // TODO: separate component */}
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button

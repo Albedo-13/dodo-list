@@ -1,4 +1,4 @@
-import type { BacklogItem, Status } from './types';
+import type { BacklogItem, Status, User } from './types';
 
 export type BacklogData = {
   allBacklogs: BacklogItem[];
@@ -6,4 +6,25 @@ export type BacklogData = {
 
 export type StatusData = {
   allStatuses: Status[];
+};
+
+export type UserData = {
+  allUsers: User[];
+};
+
+export type EditBacklogPayload = {
+  id: number;
+  task: string;
+  type: string;
+  isDone: boolean;
+  estimation: number;
+  status_id: number;
+  user_id: number | null;
+};
+
+export type AddBacklogPayload = EditBacklogPayload;
+
+export type ToggleBacklogPayload = {
+  id: number;
+  isDone: boolean;
 };
