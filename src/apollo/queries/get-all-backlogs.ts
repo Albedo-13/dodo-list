@@ -7,7 +7,6 @@ export const GET_ALL_BACKLOGS = gql`
       task
       type
       estimation
-      isDone
       status: Status {
         id
         name

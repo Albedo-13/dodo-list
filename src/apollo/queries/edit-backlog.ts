@@ -5,7 +5,6 @@ export const EDIT_BACKLOG = gql`
     $id: ID!
     $task: String!
     $type: String!
-    $isDone: Boolean!
     $estimation: Int!
     $user_id: ID
     $status_id: ID!
@@ -14,7 +13,6 @@ export const EDIT_BACKLOG = gql`
       id: $id
       task: $task
       type: $type
-      isDone: $isDone
       estimation: $estimation
       user_id: $user_id
       status_id: $status_id
@@ -22,7 +20,6 @@ export const EDIT_BACKLOG = gql`
       id
       task
       type
-      isDone
       estimation
       user_id
       status_id

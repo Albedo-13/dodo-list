@@ -71,12 +71,12 @@ export function BacklogForm({ open, backlogItem }: BacklogFormType) {
     values: {
       task: backlogItem?.task || '',
       type: backlogItem?.type || '',
-      statusId: backlogItem?.status?.id.toString() || '',
+      statusId: backlogItem?.status?.id.toString() || '1', // 1 - todo
       estimation: backlogItem?.estimation || 0,
       userId: Number(backlogItem?.user?.id) || null,
     },
   });
-  const { handleSubmit, control, reset, watch } = form;
+  const { handleSubmit, control, reset, watch, getValues, setValue } = form;
 
   useEffect(() => {
     if (!open) {
@@ -84,23 +84,35 @@ export function BacklogForm({ open, backlogItem }: BacklogFormType) {
     }
   }, [open, reset]);
 
-  function onSubmit(values: z.infer<typeof backlogFormSchema>) {
+  const onUserChange = () => {
+    if (!getValues('userId')) setValue('statusId', '1');
+  };
+
+  const onSubmit = async (values: z.infer<typeof backlogFormSchema>) => {
     const query = formPurpose === 'add' ? addBacklog : editBacklog;
 
-    query({
+    await query({
       variables: {
         ...(formPurpose === 'edit' && { id: backlogItem?.id }),
         task: values.task,
         type: values.type,
-        isDone: Number(values.statusId) === 3, // id:3 is equal to 'done'
         status_id: Number(values.statusId),
         estimation: values.estimation,
         user_id: values.userId,
       },
     });
 
-    console.log('submitted', values);
-  }
+    if (formPurpose === 'add') reset();
+
+    console.log('submitted', {
+      ...(formPurpose === 'edit' && { id: backlogItem?.id }),
+      task: values.task,
+      type: values.type,
+      status_id: Number(values.statusId),
+      estimation: values.estimation,
+      user_id: values.userId,
+    });
+  };
   console.log(watch());
 
   console.log('backlogItem', formPurpose, backlogItem);
@@ -159,6 +171,7 @@ export function BacklogForm({ open, backlogItem }: BacklogFormType) {
                         {...field}
                         onValueChange={field.onChange}
                         value={field.value}
+                        disabled={!getValues('userId')}
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select status" />
@@ -213,6 +226,7 @@ export function BacklogForm({ open, backlogItem }: BacklogFormType) {
                         field={field}
                         form={form}
                         placeholder="Select assignee"
+                        onChange={onUserChange}
                         options={(usersData?.allUsers || []).map((user) => ({
                           key: user.id,
                           content: user.name,

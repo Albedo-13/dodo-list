@@ -16,7 +16,6 @@ export type EditBacklogPayload = {
   id: number;
   task: string;
   type: string;
-  isDone: boolean;
   estimation: number;
   status_id: number;
   user_id: number | null;
@@ -26,5 +25,9 @@ export type AddBacklogPayload = EditBacklogPayload;
 
 export type ToggleBacklogPayload = {
   id: number;
-  isDone: boolean;
+  status_id: number;
+};
+
+export type DeleteBacklogPayload = {
+  id: number;
 };

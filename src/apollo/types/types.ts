@@ -17,7 +17,6 @@ export type BacklogItem = {
   task: string;
   type: string;
   estimation: number;
-  isDone: boolean;
   status: Status;
   user: User | null;
 };

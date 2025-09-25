@@ -4,7 +4,6 @@ export const ADD_BACKLOG = gql`
   mutation AddBacklog(
     $task: String!
     $type: String!
-    $isDone: Boolean!
     $estimation: Int!
     $user_id: ID
     $status_id: ID!
@@ -12,7 +11,6 @@ export const ADD_BACKLOG = gql`
     createBacklog(
       task: $task
       type: $type
-      isDone: $isDone
       estimation: $estimation
       user_id: $user_id
       status_id: $status_id
@@ -20,7 +18,6 @@ export const ADD_BACKLOG = gql`
       id
       task
       type
-      isDone
       estimation
       user_id
       status_id

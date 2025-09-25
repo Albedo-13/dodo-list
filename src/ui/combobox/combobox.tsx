@@ -21,6 +21,7 @@ type ComboboxProps<T extends Record<string, any>> = {
   defaultValue?: string;
   field: ControllerRenderProps<T, any>;
   form: UseFormReturn<any, any, T>;
+  onChange: VoidFunction;
 };
 
 function Combobox<T extends Record<string, any>>({
@@ -28,6 +29,7 @@ function Combobox<T extends Record<string, any>>({
   placeholder,
   field,
   form,
+  onChange,
 }: ComboboxProps<T>) {
   const [open, setOpen] = useState(false);
 
@@ -64,7 +66,9 @@ function Combobox<T extends Record<string, any>>({
                       Number(field.value) === Number(currentValue)
                         ? null
                         : +currentValue;
+
                     form.setValue(field.name, newValue);
+                    onChange();
                     setOpen(false);
                   }}
                 >

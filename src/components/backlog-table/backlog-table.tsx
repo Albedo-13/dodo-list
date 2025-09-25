@@ -12,11 +12,13 @@ import { ListFilter, MoreHorizontal } from 'lucide-react';
 import { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
+import { DELETE_BACKLOG } from '@/apollo/queries/delete-backlog';
 import { GET_ALL_BACKLOGS } from '@/apollo/queries/get-all-backlogs';
 import { GET_ALL_STATUSES } from '@/apollo/queries/get-all-statuses';
 import { TOGGLE_BACKLOG } from '@/apollo/queries/toggle-backlog';
 import {
   type BacklogData,
+  type DeleteBacklogPayload,
   type StatusData,
   type ToggleBacklogPayload,
 } from '@/apollo/types/queries';
@@ -25,6 +27,17 @@ import { matchIcon } from '@/lib/match-icon';
 import { toggleStatusId } from '@/lib/toggle-status-id';
 import { Button } from '@/ui/button';
 import { Checkbox } from '@/ui/checkbox';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/ui/dialog-alert';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -52,10 +65,14 @@ import { columns } from './columns';
 export function BacklogTable() {
   const { data: backlogsData } = useQuery<BacklogData>(GET_ALL_BACKLOGS);
   const { data: statusesData } = useQuery<StatusData>(GET_ALL_STATUSES);
+
   const [toggleBacklog, { loading: isToggleBacklogLoading }] =
     useMutation<ToggleBacklogPayload>(TOGGLE_BACKLOG, {
       refetchQueries: [{ query: GET_ALL_BACKLOGS }],
     });
+  const [deleteBacklog] = useMutation<DeleteBacklogPayload>(DELETE_BACKLOG, {
+    refetchQueries: [{ query: GET_ALL_BACKLOGS }],
+  });
 
   const [backlogItem, setBacklogItem] = useState<BacklogItem | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -92,13 +109,20 @@ export function BacklogTable() {
     setBacklogItem(row.original);
   };
 
+  const onRowDeleteClick = (row: Row<BacklogItem>) => () => {
+    deleteBacklog({
+      variables: {
+        id: row.original.id,
+      },
+    });
+  };
+
   const onDebouncedToggleBacklogClick = useDebouncedCallback(
     (row: Row<BacklogItem>) => {
-      const { id, isDone, status, user } = row.original;
+      const { id, status, user } = row.original;
       toggleBacklog({
         variables: {
           id,
-          isDone: !isDone,
           status_id: toggleStatusId(status, user),
         },
       });
@@ -106,7 +130,7 @@ export function BacklogTable() {
     150
   );
 
-  // console.log('backlogsData', backlogsData);
+  console.log('backlogsData', backlogsData);
   // console.log('statusesData', statusesData);
   // console.log('columnFilters', columnFilters);
   // console.log('table columns', table.getAllColumns());
@@ -213,16 +237,7 @@ export function BacklogTable() {
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => {
               // TODO: separate component
-              // TODO: isdone нужно в данных?
-              const {
-                id,
-                task,
-                type,
-                estimation,
-                // isDone,
-                status,
-                user,
-              } = row.original;
+              const { id, task, type, estimation, status, user } = row.original;
 
               return (
                 <TableRow
@@ -254,8 +269,9 @@ export function BacklogTable() {
                     <TableCell>{user?.name}</TableCell>
 
                     <TableCell className="text-right">
+                      {/* // TODO: separate table-row-actions comp */}
                       <Sheet>
-                        <DropdownMenu modal={false}>
+                        <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
                               variant="ghost"
@@ -274,9 +290,35 @@ export function BacklogTable() {
                             >
                               Edit
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600 cursor-pointer">
-                              Delete
-                            </DropdownMenuItem>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <DropdownMenuItem
+                                  className="text-red-600 cursor-pointer hover:text-red-600!"
+                                  onSelect={(e) => e.preventDefault()}
+                                >
+                                  Delete
+                                </DropdownMenuItem>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Delete task {`"${task}"`}?
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will
+                                    permanently delete backlog item.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={onRowDeleteClick(row)}
+                                  >
+                                    Continue
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </Sheet>
