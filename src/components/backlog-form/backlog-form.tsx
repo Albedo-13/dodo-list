@@ -103,19 +103,7 @@ export function BacklogForm({ open, backlogItem }: BacklogFormType) {
     });
 
     if (formPurpose === 'add') reset();
-
-    console.log('submitted', {
-      ...(formPurpose === 'edit' && { id: backlogItem?.id }),
-      task: values.task,
-      type: values.type,
-      status_id: Number(values.statusId),
-      estimation: values.estimation,
-      user_id: values.userId,
-    });
   };
-  console.log(watch());
-
-  console.log('backlogItem', formPurpose, backlogItem);
 
   return (
     open && (
@@ -171,7 +159,7 @@ export function BacklogForm({ open, backlogItem }: BacklogFormType) {
                         {...field}
                         onValueChange={field.onChange}
                         value={field.value}
-                        disabled={!getValues('userId')}
+                        disabled={!watch('userId')}
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select status" />
@@ -223,6 +211,7 @@ export function BacklogForm({ open, backlogItem }: BacklogFormType) {
                     <FormLabel>Assignee</FormLabel>
                     <FormControl>
                       <Combobox<z.infer<typeof backlogFormSchema>>
+                        {...field}
                         field={field}
                         form={form}
                         placeholder="Select assignee"

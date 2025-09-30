@@ -75,7 +75,6 @@ function Combobox<T extends Record<string, any>>({
                   <CheckIcon
                     className={cn(
                       'mr-2 h-4 w-4',
-                      // TODO: cut numbers()
                       Number(field.value) === Number(option.key)
                         ? 'opacity-100'
                         : 'opacity-0'
