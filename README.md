@@ -1,9 +1,11 @@
 # Dodo list
 
 ## Description
+
 Basic CRUD app - todo list for backlog list. Practice for Shadcn, tanstack table, tailwind and GraphQL with Apollo (json-graphql-server).
 
 ## Screenshots
+
 <img width="1920" height="1067" alt="image" src="https://github.com/user-attachments/assets/4af15fac-bcd0-4cb3-aff1-ddd5c27cad34" />
 
 <img width="1920" height="1064" alt="image" src="https://github.com/user-attachments/assets/a45dacba-9c77-4d34-91fa-6fc67032128d" />

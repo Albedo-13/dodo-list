@@ -29,7 +29,7 @@ export function BacklogTableRow({
   setIsFormOpen,
   setBacklogItem,
 }: BacklogTableRowProps) {
-  const { id, task, type, estimation, status, user } = row.original;
+  const { task, type, estimation, status, user } = row.original;
 
   const [toggleBacklog, { loading: isToggleBacklogLoading }] =
     useMutation<ToggleBacklogPayload>(TOGGLE_BACKLOG, {
@@ -72,7 +72,6 @@ export function BacklogTableRow({
     >
       <>
         <TableCell className="font-medium flex gap-x-3 pt-4 pl-4">
-          {id}
           <Checkbox
             checked={status?.key === 'done'}
             onClick={() => onDebouncedToggleBacklogClick(row)}
